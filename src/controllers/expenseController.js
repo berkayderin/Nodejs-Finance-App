@@ -5,7 +5,11 @@ const prisma = new PrismaClient()
 exports.createExpense = async (req, res) => {
 	try {
 		const { name, amount, description, date, categoryId } = req.body
-		const userId = req.user.id
+		const userId = req.user.userId
+
+		if (!userId) {
+			return res.status(401).json({ message: 'Kullanıcı kimliği bulunamadı' })
+		}
 
 		// Kategori kontrolü
 		const category = await prisma.category.findFirst({
@@ -22,11 +26,19 @@ exports.createExpense = async (req, res) => {
 		const expense = await prisma.expense.create({
 			data: {
 				name,
-				amount: Number(amount),
+				amount: parseFloat(amount),
 				description,
 				date: new Date(date),
-				categoryId: Number(categoryId),
-				userId
+				user: {
+					connect: {
+						id: userId
+					}
+				},
+				category: {
+					connect: {
+						id: Number(categoryId)
+					}
+				}
 			},
 			include: {
 				category: true
@@ -38,6 +50,7 @@ exports.createExpense = async (req, res) => {
 			expense
 		})
 	} catch (error) {
+		console.error('Gider oluşturma hatası:', error)
 		res.status(500).json({ message: 'Sunucu hatası', error: error.message })
 	}
 }
@@ -70,17 +83,8 @@ exports.getExpenses = async (req, res) => {
 			}
 		})
 
-		const total = await prisma.expense.aggregate({
-			where,
-			_sum: {
-				amount: true
-			}
-		})
-
-		res.json({
-			expenses,
-			total: total._sum.amount || 0
-		})
+		// Direkt expenses array'ini dönüyoruz
+		res.json(expenses)
 	} catch (error) {
 		res.status(500).json({ message: 'Sunucu hatası', error: error.message })
 	}

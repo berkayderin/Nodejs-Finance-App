@@ -23,4 +23,8 @@ router.get('/incomes', (req, res) => {
 	res.render('panel/incomes', { layout: 'layouts/panel' })
 })
 
+router.get('/expenses', (req, res) => {
+	res.render('panel/expenses', { layout: 'layouts/panel' })
+})
+
 module.exports = router
