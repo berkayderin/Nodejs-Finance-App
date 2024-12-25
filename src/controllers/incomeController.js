@@ -4,20 +4,8 @@ const prisma = new PrismaClient()
 // Gelir oluşturma
 exports.createIncome = async (req, res) => {
 	try {
-		const { name, amount, description, date, categoryId } = req.body
+		const { name, amount, description, date } = req.body
 		const userId = req.user.id
-
-		// Kategori kontrolü
-		const category = await prisma.category.findFirst({
-			where: {
-				id: Number(categoryId),
-				userId
-			}
-		})
-
-		if (!category) {
-			return res.status(404).json({ message: 'Kategori bulunamadı' })
-		}
 
 		const income = await prisma.income.create({
 			data: {
@@ -25,11 +13,7 @@ exports.createIncome = async (req, res) => {
 				amount: Number(amount),
 				description,
 				date: new Date(date),
-				categoryId: Number(categoryId),
 				userId
-			},
-			include: {
-				category: true
 			}
 		})
 

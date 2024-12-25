@@ -33,7 +33,6 @@ model Category {
   userId      Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  incomes     Income[]
   expenses    Expense[]
 
   @@unique([name, userId])
@@ -45,8 +44,6 @@ model Income {
   amount      Decimal  @db.Decimal(10, 2)
   description String?
   date        DateTime
-  category    Category @relation(fields: [categoryId], references: [id])
-  categoryId  Int
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   createdAt   DateTime @default(now())
