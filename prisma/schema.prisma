@@ -41,6 +41,7 @@ model Category {
 
 model Income {
   id          Int      @id @default(autoincrement())
+  name        String
   amount      Decimal  @db.Decimal(10, 2)
   description String?
   date        DateTime
@@ -54,6 +55,7 @@ model Income {
 
 model Expense {
   id          Int      @id @default(autoincrement())
+  name        String
   amount      Decimal  @db.Decimal(10, 2)
   description String?
   date        DateTime

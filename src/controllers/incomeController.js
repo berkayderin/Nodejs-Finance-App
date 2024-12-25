@@ -4,8 +4,8 @@ const prisma = new PrismaClient()
 // Gelir oluşturma
 exports.createIncome = async (req, res) => {
 	try {
-		const { amount, description, date, categoryId } = req.body
-		const userId = req.user.userId
+		const { name, amount, description, date, categoryId } = req.body
+		const userId = req.user.id
 
 		// Kategori kontrolü
 		const category = await prisma.category.findFirst({
@@ -21,6 +21,7 @@ exports.createIncome = async (req, res) => {
 
 		const income = await prisma.income.create({
 			data: {
+				name,
 				amount: Number(amount),
 				description,
 				date: new Date(date),

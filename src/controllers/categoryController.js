@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 exports.createCategory = async (req, res) => {
 	try {
 		const { name, description } = req.body
-		const userId = req.user.userId
+		const userId = req.user.id
 
 		const category = await prisma.category.create({
 			data: {

@@ -12,7 +12,16 @@ const authMiddleware = async (req, res, next) => {
 			}
 
 			const decoded = jwt.verify(token, process.env.JWT_SECRET)
-			req.user = decoded
+			const user = await prisma.user.findUnique({
+				where: { id: decoded.userId },
+				select: { id: true, name: true, email: true, role: true }
+			})
+
+			if (!user) {
+				return res.status(401).json({ message: 'Kullanıcı bulunamadı' })
+			}
+
+			req.user = user
 			return next()
 		}
 
