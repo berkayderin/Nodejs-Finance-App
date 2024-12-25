@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth')
 const categoryRoutes = require('./routes/categoryRoutes')
 const incomeRoutes = require('./routes/incomeRoutes')
 const expenseRoutes = require('./routes/expenseRoutes')
+const userRoutes = require('./routes/userRoutes')
 
 const app = express()
 
@@ -17,6 +18,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/incomes', incomeRoutes)
 app.use('/api/expenses', expenseRoutes)
+app.use('/api/users', userRoutes)
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
