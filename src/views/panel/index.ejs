@@ -243,12 +243,19 @@
 	class="py-6"
 >
 	<!-- İstatistik Kartları -->
-	<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+	<div
+		class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8"
+	>
 		<div class="bg-white overflow-hidden shadow rounded-lg">
 			<div class="p-5">
 				<div class="flex items-center">
 					<div class="flex-shrink-0">
-						<svg class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<svg
+							class="h-6 w-6 text-primary-600"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
 							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -259,8 +266,13 @@
 					</div>
 					<div class="ml-5 w-0 flex-1">
 						<dl>
-							<dt class="text-sm font-medium text-gray-500 truncate">Toplam Gelir</dt>
-							<dd class="text-lg font-medium text-gray-900" x-text="formatCurrency(stats.totalStats.income)"></dd>
+							<dt class="text-sm font-medium text-gray-500 truncate">
+								Toplam Gelir
+							</dt>
+							<dd
+								class="text-lg font-medium text-gray-900"
+								x-text="formatCurrency(stats.totalStats.income)"
+							></dd>
 						</dl>
 					</div>
 				</div>
@@ -271,7 +283,12 @@
 			<div class="p-5">
 				<div class="flex items-center">
 					<div class="flex-shrink-0">
-						<svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<svg
+							class="h-6 w-6 text-red-600"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
 							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -282,8 +299,13 @@
 					</div>
 					<div class="ml-5 w-0 flex-1">
 						<dl>
-							<dt class="text-sm font-medium text-gray-500 truncate">Toplam Gider</dt>
-							<dd class="text-lg font-medium text-gray-900" x-text="formatCurrency(stats.totalStats.expense)"></dd>
+							<dt class="text-sm font-medium text-gray-500 truncate">
+								Toplam Gider
+							</dt>
+							<dd
+								class="text-lg font-medium text-gray-900"
+								x-text="formatCurrency(stats.totalStats.expense)"
+							></dd>
 						</dl>
 					</div>
 				</div>
@@ -294,7 +316,12 @@
 			<div class="p-5">
 				<div class="flex items-center">
 					<div class="flex-shrink-0">
-						<svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<svg
+							class="h-6 w-6 text-gray-600"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
 							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -305,7 +332,9 @@
 					</div>
 					<div class="ml-5 w-0 flex-1">
 						<dl>
-							<dt class="text-sm font-medium text-gray-500 truncate">Net Durum</dt>
+							<dt class="text-sm font-medium text-gray-500 truncate">
+								Net Durum
+							</dt>
 							<dd
 								class="text-lg font-medium"
 								:class="stats.totalStats.income - stats.totalStats.expense >= 0 ? 'text-green-600' : 'text-red-600'"
@@ -321,10 +350,72 @@
 	<!-- Grafikler -->
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 		<div class="bg-white p-6 rounded-lg shadow">
-			<canvas id="monthlyChart"></canvas>
+			<template
+				x-if="stats.monthlyData.incomes.every(income => income === 0) && stats.monthlyData.expenses.every(expense => expense === 0)"
+			>
+				<div
+					class="flex items-center justify-center h-[300px] text-gray-500"
+				>
+					<div class="text-center">
+						<svg
+							class="mx-auto h-12 w-12 text-gray-400"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+							/>
+						</svg>
+						<h3 class="mt-2 text-sm font-medium">Veri Yok</h3>
+						<p class="mt-1 text-sm text-gray-500">
+							Henüz gelir veya gider kaydı bulunmuyor.
+						</p>
+					</div>
+				</div>
+			</template>
+			<template
+				x-if="!stats.monthlyData.incomes.every(income => income === 0) || !stats.monthlyData.expenses.every(expense => expense === 0)"
+			>
+				<canvas id="monthlyChart"></canvas>
+			</template>
 		</div>
 		<div class="bg-white p-6 rounded-lg shadow">
-			<canvas id="categoryChart"></canvas>
+			<template
+				x-if="stats.categoryData.data.every(amount => amount === 0)"
+			>
+				<div
+					class="flex items-center justify-center h-[300px] text-gray-500"
+				>
+					<div class="text-center">
+						<svg
+							class="mx-auto h-12 w-12 text-gray-400"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+							/>
+						</svg>
+						<h3 class="mt-2 text-sm font-medium">Veri Yok</h3>
+						<p class="mt-1 text-sm text-gray-500">
+							Henüz kategori bazlı gider kaydı bulunmuyor.
+						</p>
+					</div>
+				</div>
+			</template>
+			<template
+				x-if="!stats.categoryData.data.every(amount => amount === 0)"
+			>
+				<canvas id="categoryChart"></canvas>
+			</template>
 		</div>
 	</div>
 </div>
