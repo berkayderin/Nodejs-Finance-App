@@ -15,4 +15,8 @@ router.get('/', (req, res) => {
 	res.render('panel/index', { layout: 'layouts/panel' })
 })
 
+router.get('/categories', (req, res) => {
+	res.render('panel/categories', { layout: 'layouts/panel' })
+})
+
 module.exports = router
