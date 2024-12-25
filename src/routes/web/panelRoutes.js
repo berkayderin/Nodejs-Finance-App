@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../../middleware/auth')
+const adminAuth = require('../../middleware/adminAuth')
 
 router.use(authMiddleware)
 
@@ -25,6 +26,10 @@ router.get('/incomes', (req, res) => {
 
 router.get('/expenses', (req, res) => {
 	res.render('panel/expenses', { layout: 'layouts/panel' })
+})
+
+router.get('/users', adminAuth, (req, res) => {
+	res.render('panel/users', { layout: 'layouts/panel' })
 })
 
 module.exports = router
