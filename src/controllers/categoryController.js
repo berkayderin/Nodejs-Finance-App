@@ -5,27 +5,27 @@ const prisma = new PrismaClient()
 exports.createCategory = async (req, res) => {
 	try {
 		const { name, description } = req.body
-		const userId = req.user.id
+		const userId = req.user.userId
 
 		const category = await prisma.category.create({
 			data: {
 				name,
 				description,
-				userId
+				user: {
+					connect: {
+						id: userId
+					}
+				}
 			}
 		})
 
-		res.status(201).json({
-			message: 'Kategori başarıyla oluşturuldu',
-			category
-		})
+		res.status(201).json(category)
 	} catch (error) {
-		if (error.code === 'P2002') {
-			return res.status(400).json({
-				message: 'Bu isimde bir kategori zaten mevcut'
-			})
-		}
-		res.status(500).json({ message: 'Sunucu hatası', error: error.message })
+		console.error('Kategori oluşturma hatası:', error)
+		res.status(500).json({
+			message: 'Sunucu hatası',
+			error: error.message
+		})
 	}
 }
 
@@ -34,12 +34,10 @@ exports.getCategories = async (req, res) => {
 	try {
 		const userId = req.user.userId
 
-		const where = {
-			userId
-		}
-
 		const categories = await prisma.category.findMany({
-			where,
+			where: {
+				userId
+			},
 			orderBy: {
 				createdAt: 'desc'
 			}
