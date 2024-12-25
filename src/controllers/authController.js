@@ -79,11 +79,23 @@ exports.login = async (req, res) => {
 			{ expiresIn: '24h' }
 		)
 
-		res.json({
-			message: 'Giriş başarılı',
-			token,
-			role: user.role
+		// API isteği ise JSON yanıt dön
+		if (req.path.startsWith('/api/')) {
+			return res.json({
+				message: 'Giriş başarılı',
+				token,
+				role: user.role
+			})
+		}
+
+		// Web form isteği ise cookie ayarla ve yönlendir
+		res.cookie('token', token, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			maxAge: 24 * 60 * 60 * 1000 // 24 saat
 		})
+
+		res.redirect('/panel')
 	} catch (error) {
 		res.status(500).json({ message: 'Sunucu hatası', error: error.message })
 	}
@@ -125,4 +137,9 @@ exports.changePassword = async (req, res) => {
 	} catch (error) {
 		res.status(500).json({ message: 'Sunucu hatası', error: error.message })
 	}
+}
+
+exports.logout = (req, res) => {
+	res.clearCookie('token')
+	res.redirect('/auth/login')
 }
