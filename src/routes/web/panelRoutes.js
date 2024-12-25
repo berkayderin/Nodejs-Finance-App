@@ -28,6 +28,10 @@ router.get('/expenses', (req, res) => {
 	res.render('panel/expenses', { layout: 'layouts/panel' })
 })
 
+router.get('/settings', (req, res) => {
+	res.render('panel/settings', { layout: 'layouts/panel' })
+})
+
 router.get('/users', adminAuth, (req, res) => {
 	res.render('panel/users', { layout: 'layouts/panel' })
 })

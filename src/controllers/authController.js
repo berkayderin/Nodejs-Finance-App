@@ -143,3 +143,59 @@ exports.logout = (req, res) => {
 	res.clearCookie('token')
 	res.redirect('/auth/login')
 }
+
+// Web routes için login işlemi
+exports.webLogin = async (req, res) => {
+	try {
+		const { email, password } = req.body
+
+		const user = await prisma.user.findUnique({
+			where: { email }
+		})
+
+		if (!user) {
+			return res.render('auth/login', { error: 'Geçersiz email veya şifre' })
+		}
+
+		const validPassword = await bcrypt.compare(password, user.password)
+		if (!validPassword) {
+			return res.render('auth/login', { error: 'Geçersiz email veya şifre' })
+		}
+
+		const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET)
+		res.cookie('token', token, { httpOnly: true })
+		res.redirect('/panel')
+	} catch (error) {
+		res.render('auth/login', { error: 'Sunucu hatası' })
+	}
+}
+
+// Web routes için register işlemi
+exports.webRegister = async (req, res) => {
+	try {
+		const { email, password, name } = req.body
+
+		const userExists = await prisma.user.findUnique({
+			where: { email }
+		})
+
+		if (userExists) {
+			return res.render('auth/register', { error: 'Bu email adresi zaten kullanımda' })
+		}
+
+		const hashedPassword = await bcrypt.hash(password, 10)
+
+		await prisma.user.create({
+			data: {
+				email,
+				password: hashedPassword,
+				name,
+				role: 'USER'
+			}
+		})
+
+		res.redirect('/auth/login')
+	} catch (error) {
+		res.render('auth/register', { error: 'Sunucu hatası' })
+	}
+}
