@@ -52,7 +52,7 @@
 								<li>
 									<a
 										href="/panel"
-										class="<%= path === '/panel' ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+										class="<%= path === '/panel' ? 'bg-primary-50 text-primary-600 font-bold border-l-4 border-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
 									>
 										<svg
 											class="h-6 w-6 shrink-0"
@@ -73,7 +73,7 @@
 								<li>
 									<a
 										href="/panel/categories"
-										class="<%= path === '/panel/categories' ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+										class="<%= path === '/panel/categories' ? 'bg-primary-50 text-primary-600 font-bold border-l-4 border-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
 									>
 										<svg
 											class="h-6 w-6 shrink-0"
@@ -94,7 +94,7 @@
 								<li>
 									<a
 										href="/panel/incomes"
-										class="<%= path === '/panel/incomes' ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+										class="<%= path === '/panel/incomes' ? 'bg-primary-50 text-primary-600 font-bold border-l-4 border-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
 									>
 										<svg
 											class="h-6 w-6 shrink-0"
@@ -115,7 +115,7 @@
 								<li>
 									<a
 										href="/panel/expenses"
-										class="<%= path === '/panel/expenses' ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+										class="<%= path === '/panel/expenses' ? 'bg-primary-50 text-primary-600 font-bold border-l-4 border-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
 									>
 										<svg
 											class="h-6 w-6 shrink-0"
@@ -134,6 +134,23 @@
 									</a>
 								</li>
 							</ul>
+						</li>
+
+						<!-- Çıkış yap butonu -->
+						<li class="mt-auto">
+							<a
+								href="/auth/logout"
+								class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-red-600 hover:bg-red-50"
+							>
+								<svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+									/>
+								</svg>
+								Çıkış Yap
+							</a>
 						</li>
 					</ul>
 				</nav>
@@ -155,7 +172,7 @@
 						<li>
 							<a
 								href="/panel"
-								class="<%= path === '/panel' ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+								class="<%= path === '/panel' ? 'bg-primary-50 text-primary-600 font-bold border-l-4 border-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
 							>
 								<svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
 									<path
@@ -170,7 +187,7 @@
 						<li>
 							<a
 								href="/panel/categories"
-								class="<%= path === '/panel/categories' ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+								class="<%= path === '/panel/categories' ? 'bg-primary-50 text-primary-600 font-bold border-l-4 border-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
 							>
 								<svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
 									<path
@@ -185,7 +202,7 @@
 						<li>
 							<a
 								href="/panel/incomes"
-								class="<%= path === '/panel/incomes' ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+								class="<%= path === '/panel/incomes' ? 'bg-primary-50 text-primary-600 font-bold border-l-4 border-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
 							>
 								<svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
 									<path
@@ -200,7 +217,7 @@
 						<li>
 							<a
 								href="/panel/expenses"
-								class="<%= path === '/panel/expenses' ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+								class="<%= path === '/panel/expenses' ? 'bg-primary-50 text-primary-600 font-bold border-l-4 border-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' %> group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
 							>
 								<svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
 									<path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -209,6 +226,23 @@
 							</a>
 						</li>
 					</ul>
+				</li>
+
+				<!-- Çıkış yap butonu -->
+				<li class="mt-auto">
+					<a
+						href="/auth/logout"
+						class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-red-600 hover:bg-red-50"
+					>
+						<svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+							/>
+						</svg>
+						Çıkış Yap
+					</a>
 				</li>
 			</ul>
 		</nav>
