@@ -44,6 +44,38 @@ app.use('/api/users', userRoutes)
 app.use('/auth', require('./routes/web/authRoutes'))
 app.use('/panel', require('./routes/web/panelRoutes'))
 
+// 404 - Sayfa Bulunamadı
+app.use((req, res, next) => {
+	if (req.path.startsWith('/api/')) {
+		res.status(404).json({ message: 'Endpoint bulunamadı' })
+	} else {
+		res.status(404).render('error', {
+			layout: 'layouts/main',
+			error: {
+				status: 404,
+				message: 'Sayfa bulunamadı'
+			}
+		})
+	}
+})
+
+// Hata Yönetimi
+app.use((err, req, res, next) => {
+	console.error(err.stack)
+
+	if (req.path.startsWith('/api/')) {
+		res.status(500).json({ message: 'Sunucu hatası', error: err.message })
+	} else {
+		res.status(500).render('error', {
+			layout: 'layouts/main',
+			error: {
+				status: 500,
+				message: 'Sunucu hatası'
+			}
+		})
+	}
+})
+
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
 	console.log(`Server ${PORT} portunda çalışıyor`)
