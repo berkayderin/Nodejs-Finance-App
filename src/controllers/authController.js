@@ -88,3 +88,41 @@ exports.login = async (req, res) => {
 		res.status(500).json({ message: 'Sunucu hatası', error: error.message })
 	}
 }
+
+exports.changePassword = async (req, res) => {
+	try {
+		const { currentPassword, newPassword } = req.body
+		const userId = req.user.userId
+
+		// Kullanıcıyı bul
+		const user = await prisma.user.findUnique({
+			where: { id: userId }
+		})
+
+		if (!user) {
+			return res.status(404).json({ message: 'Kullanıcı bulunamadı' })
+		}
+
+		// Mevcut şifreyi kontrol et
+		const validPassword = await bcrypt.compare(currentPassword, user.password)
+		if (!validPassword) {
+			return res.status(400).json({ message: 'Mevcut şifre yanlış' })
+		}
+
+		// Yeni şifreyi hashle
+		const hashedNewPassword = await bcrypt.hash(newPassword, 10)
+
+		// Şifreyi güncelle
+		await prisma.user.update({
+			where: { id: userId },
+			data: {
+				password: hashedNewPassword,
+				updatedAt: new Date()
+			}
+		})
+
+		res.json({ message: 'Şifre başarıyla değiştirildi' })
+	} catch (error) {
+		res.status(500).json({ message: 'Sunucu hatası', error: error.message })
+	}
+}

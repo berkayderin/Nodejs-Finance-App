@@ -1,5 +1,6 @@
 const express = require('express')
-const { register, login } = require('../controllers/authController')
+const { register, login, changePassword } = require('../controllers/authController')
+const authMiddleware = require('../middleware/auth')
 
 const router = express.Router()
 
@@ -100,5 +101,50 @@ router.post('/register', register)
  *         description: Sunucu hatası
  */
 router.post('/login', login)
+
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   put:
+ *     summary: Kullanıcı şifresini değiştirme
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: Mevcut şifre
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: Yeni şifre
+ *     responses:
+ *       200:
+ *         description: Şifre başarıyla değiştirildi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Geçersiz şifre
+ *       401:
+ *         description: Yetkilendirme hatası
+ *       500:
+ *         description: Sunucu hatası
+ */
+router.put('/change-password', authMiddleware, changePassword)
 
 module.exports = router
