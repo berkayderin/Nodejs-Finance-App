@@ -1,0 +1,364 @@
+<div
+	x-data="{ 
+		incomes: [],
+		editingIncome: null,
+		deleteConfirmModal: false,
+		incomeToDelete: null,
+		incomeModal: false,
+		incomeForm: {
+			name: '',
+			amount: '',
+			description: '',
+			date: new Date().toISOString().split('T')[0]
+		},
+		async getIncomes() {
+			try {
+				const response = await fetch('/api/incomes')
+				const data = await response.json()
+				this.incomes = data
+			} catch (error) {
+				console.error('Gelirler yüklenirken hata:', error)
+			}
+		},
+		async submitIncome() {
+			try {
+				const url = this.editingIncome 
+					? `/api/incomes/${this.editingIncome.id}`
+					: '/api/incomes'
+				
+				const method = this.editingIncome ? 'PUT' : 'POST'
+				
+				const response = await fetch(url, {
+					method,
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(this.incomeForm)
+				})
+				
+				if (response.ok) {
+					this.incomeModal = false
+					this.incomeForm = {
+						name: '',
+						amount: '',
+						description: '',
+						date: new Date().toISOString().split('T')[0]
+					}
+					this.editingIncome = null
+					this.getIncomes()
+				}
+			} catch (error) {
+				console.error('Gelir işlemi sırasında hata:', error)
+			}
+		},
+		editIncome(income) {
+			this.editingIncome = income
+			this.incomeForm = {
+				name: income.name,
+				amount: income.amount,
+				description: income.description || '',
+				date: new Date(income.date).toISOString().split('T')[0]
+			}
+			this.incomeModal = true
+		},
+		async deleteIncome() {
+			if (!this.incomeToDelete) return
+			
+			try {
+				const response = await fetch(`/api/incomes/${this.incomeToDelete.id}`, {
+					method: 'DELETE'
+				})
+				
+				if (response.ok) {
+					this.deleteConfirmModal = false
+					this.incomeToDelete = null
+					this.getIncomes()
+				}
+			} catch (error) {
+				console.error('Gelir silinirken hata:', error)
+			}
+		},
+		confirmDelete(income) {
+			this.incomeToDelete = income
+			this.deleteConfirmModal = true
+		},
+		resetForm() {
+			this.incomeForm = {
+				name: '',
+				amount: '',
+				description: '',
+				date: new Date().toISOString().split('T')[0]
+			}
+			this.editingIncome = null
+			this.incomeModal = true
+		},
+		formatDate(dateString) {
+			try {
+				return new Date(dateString).toLocaleDateString('tr-TR')
+			} catch (error) {
+				return '-'
+			}
+		},
+		formatCurrency(amount) {
+			try {
+				return new Intl.NumberFormat('tr-TR', {
+					style: 'currency',
+					currency: 'TRY',
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2
+				}).format(amount)
+			} catch (error) {
+				return '-'
+			}
+		}
+	}"
+	x-init="getIncomes"
+>
+	<div class="sm:flex sm:items-center">
+		<div class="sm:flex-auto">
+			<h1 class="text-xl font-semibold text-gray-900">Gelirler</h1>
+			<p class="mt-2 text-sm text-gray-700">Tüm gelirlerinizi görüntüleyin ve yönetin.</p>
+		</div>
+		<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+			<button
+				@click="resetForm()"
+				class="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto"
+			>
+				Yeni Gelir
+			</button>
+		</div>
+	</div>
+
+	<!-- Gelir Listesi -->
+	<div class="mt-8 flex flex-col">
+		<div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+			<div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+				<div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+					<table class="min-w-full divide-y divide-gray-300">
+						<thead class="bg-gray-50">
+							<tr>
+								<th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+									Gelir Adı
+								</th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tutar</th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tarih</th>
+								<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Açıklama</th>
+								<th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+									<span class="sr-only">İşlemler</span>
+								</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-gray-200 bg-white">
+							<template x-for="income in incomes" :key="income.id">
+								<tr>
+									<td
+										class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+										x-text="income.name"
+									></td>
+									<td
+										class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+										x-text="formatCurrency(income.amount)"
+									></td>
+									<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" x-text="formatDate(income.date)"></td>
+									<td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" x-text="income.description || '-'"></td>
+									<td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+										<button @click="editIncome(income)" class="text-primary-600 hover:text-primary-900 mr-4">
+											Düzenle
+										</button>
+										<button @click="confirmDelete(income)" class="text-red-600 hover:text-red-900">Sil</button>
+									</td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Gelir Modal -->
+	<div x-show="incomeModal" class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak>
+		<div
+			x-show="incomeModal"
+			x-transition:enter="ease-out duration-300"
+			x-transition:enter-start="opacity-0"
+			x-transition:enter-end="opacity-100"
+			x-transition:leave="ease-in duration-200"
+			x-transition:leave-start="opacity-100"
+			x-transition:leave-end="opacity-0"
+			class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+		></div>
+
+		<div class="fixed inset-0 z-10 overflow-y-auto">
+			<div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+				<div
+					x-show="incomeModal"
+					x-transition:enter="ease-out duration-300"
+					x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+					x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+					x-transition:leave="ease-in duration-200"
+					x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+					x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+					class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+				>
+					<div>
+						<h3
+							class="text-lg font-medium leading-6 text-gray-900 mb-4"
+							x-text="editingIncome ? 'Gelir Düzenle' : 'Yeni Gelir'"
+						></h3>
+						<form @submit.prevent="submitIncome">
+							<div class="space-y-4">
+								<div>
+									<label for="name" class="block text-sm font-medium text-gray-700">Gelir Adı</label>
+									<input
+										type="text"
+										name="name"
+										id="name"
+										x-model="incomeForm.name"
+										required
+										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+									/>
+								</div>
+								<div>
+									<label for="amount" class="block text-sm font-medium text-gray-700">Tutar</label>
+									<input
+										type="number"
+										step="0.01"
+										name="amount"
+										id="amount"
+										x-model="incomeForm.amount"
+										required
+										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+									/>
+								</div>
+								<div>
+									<label for="date" class="block text-sm font-medium text-gray-700">Tarih</label>
+									<input
+										type="date"
+										name="date"
+										id="date"
+										x-model="incomeForm.date"
+										required
+										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+									/>
+								</div>
+								<div>
+									<label for="description" class="block text-sm font-medium text-gray-700">Açıklama</label>
+									<textarea
+										name="description"
+										id="description"
+										x-model="incomeForm.description"
+										rows="3"
+										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+									></textarea>
+								</div>
+							</div>
+							<div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+								<button
+									type="submit"
+									class="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 sm:col-start-2"
+									x-text="editingIncome ? 'Güncelle' : 'Kaydet'"
+								></button>
+								<button
+									type="button"
+									@click="incomeModal = false"
+									class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+								>
+									İptal
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Silme Onay Modal -->
+	<div
+		x-show="deleteConfirmModal"
+		class="relative z-10"
+		aria-labelledby="modal-title"
+		role="dialog"
+		aria-modal="true"
+		x-cloak
+	>
+		<div
+			x-show="deleteConfirmModal"
+			x-transition:enter="ease-out duration-300"
+			x-transition:enter-start="opacity-0"
+			x-transition:enter-end="opacity-100"
+			x-transition:leave="ease-in duration-200"
+			x-transition:leave-start="opacity-100"
+			x-transition:leave-end="opacity-0"
+			class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+		></div>
+
+		<div class="fixed inset-0 z-10 overflow-y-auto">
+			<div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+				<div
+					x-show="deleteConfirmModal"
+					x-transition:enter="ease-out duration-300"
+					x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+					x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+					x-transition:leave="ease-in duration-200"
+					x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+					x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+					class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+				>
+					<div class="sm:flex sm:items-start">
+						<div
+							class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+						>
+							<svg
+								class="h-6 w-6 text-red-600"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+								/>
+							</svg>
+						</div>
+						<div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+							<h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Gelir Silme</h3>
+							<div class="mt-2">
+								<p class="text-sm text-gray-500">
+									<span x-text="incomeToDelete?.name"></span> gelirini silmek istediğinizden emin misiniz? Bu işlem geri
+									alınamaz.
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+						<button
+							type="button"
+							@click="deleteIncome()"
+							class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+						>
+							Sil
+						</button>
+						<button
+							type="button"
+							@click="deleteConfirmModal = false"
+							class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+						>
+							İptal
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	[x-cloak] {
+		display: none !important;
+	}
+</style>

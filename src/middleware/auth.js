@@ -21,11 +21,16 @@ const authMiddleware = async (req, res, next) => {
 				return res.status(401).json({ message: 'Kullanıcı bulunamadı' })
 			}
 
-			req.user = user
+			req.user = {
+				userId: user.id,
+				name: user.name,
+				email: user.email,
+				role: user.role
+			}
 			return next()
 		}
 
-		// Web sayfaları için session kontrolü
+		// Web sayfaları için cookie kontrolü
 		const token = req.cookies?.token
 		if (!token) {
 			return res.redirect('/auth/login')
@@ -41,7 +46,12 @@ const authMiddleware = async (req, res, next) => {
 			return res.redirect('/auth/login')
 		}
 
-		req.user = user
+		req.user = {
+			userId: user.id,
+			name: user.name,
+			email: user.email,
+			role: user.role
+		}
 		next()
 	} catch (error) {
 		if (req.path.startsWith('/api/')) {

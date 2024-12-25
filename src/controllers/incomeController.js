@@ -5,15 +5,23 @@ const prisma = new PrismaClient()
 exports.createIncome = async (req, res) => {
 	try {
 		const { name, amount, description, date } = req.body
-		const userId = req.user.id
+		const userId = req.user.userId
+
+		if (!userId) {
+			return res.status(401).json({ message: 'Kullanıcı kimliği bulunamadı' })
+		}
 
 		const income = await prisma.income.create({
 			data: {
 				name,
-				amount: Number(amount),
+				amount: parseFloat(amount),
 				description,
 				date: new Date(date),
-				userId
+				user: {
+					connect: {
+						id: userId
+					}
+				}
 			}
 		})
 
@@ -22,6 +30,7 @@ exports.createIncome = async (req, res) => {
 			income
 		})
 	} catch (error) {
+		console.error('Gelir oluşturma hatası:', error)
 		res.status(500).json({ message: 'Sunucu hatası', error: error.message })
 	}
 }
@@ -30,7 +39,7 @@ exports.createIncome = async (req, res) => {
 exports.getIncomes = async (req, res) => {
 	try {
 		const userId = req.user.userId
-		const { startDate, endDate, categoryId } = req.query
+		const { startDate, endDate } = req.query
 
 		const where = {
 			userId,
@@ -40,31 +49,17 @@ exports.getIncomes = async (req, res) => {
 						gte: new Date(startDate),
 						lte: new Date(endDate)
 					}
-				}),
-			...(categoryId && { categoryId: Number(categoryId) })
+				})
 		}
 
 		const incomes = await prisma.income.findMany({
 			where,
-			include: {
-				category: true
-			},
 			orderBy: {
 				date: 'desc'
 			}
 		})
 
-		const total = await prisma.income.aggregate({
-			where,
-			_sum: {
-				amount: true
-			}
-		})
-
-		res.json({
-			incomes,
-			total: total._sum.amount || 0
-		})
+		res.json(incomes)
 	} catch (error) {
 		res.status(500).json({ message: 'Sunucu hatası', error: error.message })
 	}
@@ -100,7 +95,7 @@ exports.getIncome = async (req, res) => {
 exports.updateIncome = async (req, res) => {
 	try {
 		const { id } = req.params
-		const { amount, description, date, categoryId } = req.body
+		const { name, amount, description, date } = req.body
 		const userId = req.user.userId
 
 		const income = await prisma.income.findFirst({
@@ -114,29 +109,13 @@ exports.updateIncome = async (req, res) => {
 			return res.status(404).json({ message: 'Gelir bulunamadı' })
 		}
 
-		if (categoryId) {
-			const category = await prisma.category.findFirst({
-				where: {
-					id: Number(categoryId),
-					userId
-				}
-			})
-
-			if (!category) {
-				return res.status(404).json({ message: 'Kategori bulunamadı' })
-			}
-		}
-
 		const updatedIncome = await prisma.income.update({
 			where: { id: Number(id) },
 			data: {
-				amount: amount ? Number(amount) : undefined,
+				name,
+				amount: amount ? parseFloat(amount) : undefined,
 				description,
-				date: date ? new Date(date) : undefined,
-				categoryId: categoryId ? Number(categoryId) : undefined
-			},
-			include: {
-				category: true
+				date: date ? new Date(date) : undefined
 			}
 		})
 
