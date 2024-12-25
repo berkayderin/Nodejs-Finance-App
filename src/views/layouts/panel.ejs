@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="tr" class="h-full bg-gray-50">
+<html lang="tr">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Panel | Gelir Gider Takip</title>
+		<title>Panel</title>
 		<script src="https://cdn.tailwindcss.com"></script>
 		<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 		<script>
 			tailwind.config = {
 				theme: {
@@ -21,7 +22,8 @@
 								600: '#16a34a',
 								700: '#15803d',
 								800: '#166534',
-								900: '#14532d'
+								900: '#14532d',
+								950: '#052e16'
 							}
 						}
 					}
@@ -30,67 +32,15 @@
 		</script>
 	</head>
 	<body class="h-full">
-		<div class="min-h-full">
-			<!-- Navigation -->
-			<nav class="bg-gradient-to-r from-primary-600 to-primary-700">
-				<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-					<div class="flex h-16 items-center justify-between">
-						<div class="flex items-center">
-							<div class="flex-shrink-0">
-								<h1 class="text-white text-lg font-bold">Gelir Gider Takip</h1>
-							</div>
-							<div class="hidden md:block">
-								<div class="ml-10 flex items-baseline space-x-4">
-									<a
-										href="/panel"
-										class="<%= path === '/panel' ? 'bg-primary-700 text-white' : 'text-white hover:bg-primary-500 hover:bg-opacity-75' %> rounded-md px-3 py-2 text-sm font-medium"
-										>Ana Sayfa</a
-									>
-									<a
-										href="/panel/categories"
-										class="<%= path === '/panel/categories' ? 'bg-primary-700 text-white' : 'text-white hover:bg-primary-500 hover:bg-opacity-75' %> rounded-md px-3 py-2 text-sm font-medium"
-										>Kategoriler</a
-									>
-									<a
-										href="/panel/incomes"
-										class="<%= path === '/panel/incomes' ? 'bg-primary-700 text-white' : 'text-white hover:bg-primary-500 hover:bg-opacity-75' %> rounded-md px-3 py-2 text-sm font-medium"
-										>Gelirler</a
-									>
-									<a
-										href="/panel/expenses"
-										class="<%= path === '/panel/expenses' ? 'bg-primary-700 text-white' : 'text-white hover:bg-primary-500 hover:bg-opacity-75' %> rounded-md px-3 py-2 text-sm font-medium"
-										>Giderler</a
-									>
-								</div>
-							</div>
-						</div>
-						<div class="hidden md:block">
-							<div class="ml-4 flex items-center md:ml-6">
-								<div class="relative ml-3">
-									<div class="flex items-center">
-										<button
-											type="button"
-											class="flex max-w-xs items-center rounded-full bg-primary-600 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600"
-											id="user-menu-button"
-										>
-											<span class="sr-only">Kullanıcı menüsü</span>
-											<span class="h-8 w-8 rounded-full flex items-center justify-center bg-primary-500 text-white">
-												<%= user.name.charAt(0).toUpperCase() %>
-											</span>
-										</button>
-										<span class="ml-3 text-white"><%= user.name %></span>
-										<a href="/auth/logout" class="ml-3 text-white hover:text-gray-200 text-sm">Çıkış Yap</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</nav>
-
-			<main>
-				<div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8"><%- body %></div>
-			</main>
+		<div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-100">
+			<%- include('../partials/panel/sidebar') %>
+			<div class="lg:pl-72">
+				<%- include('../partials/panel/header') %>
+				<main class="py-10">
+					<div class="px-4 sm:px-6 lg:px-8"><%- body %></div>
+				</main>
+			</div>
 		</div>
+		<%- typeof scripts !== 'undefined' ? scripts : '' %>
 	</body>
 </html>

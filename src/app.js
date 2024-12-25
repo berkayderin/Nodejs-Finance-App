@@ -34,11 +34,13 @@ app.use(
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs))
 
+// API routes
 app.use('/api/auth', authRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/incomes', incomeRoutes)
 app.use('/api/expenses', expenseRoutes)
 app.use('/api/users', userRoutes)
+app.use('/api/dashboard', require('./routes/dashboardRoutes'))
 
 // Web routes
 app.use('/auth', require('./routes/web/authRoutes'))
