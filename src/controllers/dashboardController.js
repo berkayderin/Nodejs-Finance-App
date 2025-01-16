@@ -4,118 +4,121 @@ const prisma = new PrismaClient()
 exports.getDashboardStats = async (req, res) => {
 	try {
 		const userId = req.user.userId
-		const currentYear = new Date().getFullYear()
+		const now = new Date()
+		const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+		const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
 
-		// Son 6 ayın gelir ve giderlerini al
+		// Mevcut ayın harcama hedefini al
+		const currentGoal = await prisma.spendingGoal.findFirst({
+			where: {
+				userId,
+				month: monthStart
+			}
+		})
+
+		// Aylık gelir ve giderleri al
+		const monthlyIncomes = await prisma.income.findMany({
+			where: {
+				userId,
+				createdAt: {
+					gte: monthStart,
+					lte: monthEnd
+				}
+			}
+		})
+
+		const monthlyExpenses = await prisma.expense.findMany({
+			where: {
+				userId,
+				createdAt: {
+					gte: monthStart,
+					lte: monthEnd
+				}
+			},
+			include: {
+				category: true
+			}
+		})
+
+		// Toplam gelir ve giderleri hesapla
+		const totalIncome = monthlyIncomes.reduce((sum, income) => sum + income.amount, 0)
+		const totalExpense = monthlyExpenses.reduce((sum, expense) => sum + expense.amount, 0)
+
+		// Kategori bazlı gider dağılımını hesapla
+		const categoryData = monthlyExpenses.reduce((acc, expense) => {
+			const categoryName = expense.category.name
+			if (!acc[categoryName]) {
+				acc[categoryName] = 0
+			}
+			acc[categoryName] += expense.amount
+			return acc
+		}, {})
+
+		// Son 6 ayın verilerini al
 		const last6Months = Array.from({ length: 6 }, (_, i) => {
 			const date = new Date()
 			date.setMonth(date.getMonth() - i)
 			return date
 		}).reverse()
 
-		// Aylık gelirler
-		const monthlyIncomes = await prisma.income.groupBy({
-			by: ['date'],
-			where: {
-				userId,
-				date: {
-					gte: last6Months[0]
-				}
-			},
-			_sum: {
-				amount: true
-			}
-		})
-
-		// Aylık giderler
-		const monthlyExpenses = await prisma.expense.groupBy({
-			by: ['date'],
-			where: {
-				userId,
-				date: {
-					gte: last6Months[0]
-				}
-			},
-			_sum: {
-				amount: true
-			}
-		})
-
-		// Kategori bazlı giderler
-		const expensesByCategory = await prisma.expense.groupBy({
-			by: ['categoryId'],
-			where: {
-				userId,
-				date: {
-					gte: new Date(currentYear, 0, 1)
-				}
-			},
-			_sum: {
-				amount: true
-			}
-		})
-
-		const categories = await prisma.category.findMany({
-			where: {
-				userId,
-				id: {
-					in: expensesByCategory.map((e) => e.categoryId)
-				}
-			}
-		})
-
-		// Toplam istatistikler
-		const totalStats = await prisma.$transaction([
-			prisma.income.aggregate({
-				where: {
-					userId,
-					date: {
-						gte: new Date(currentYear, 0, 1)
-					}
-				},
-				_sum: {
-					amount: true
-				}
+		const monthlyData = {
+			labels: last6Months.map((date) => {
+				return new Intl.DateTimeFormat('tr-TR', { month: 'long' }).format(date)
 			}),
-			prisma.expense.aggregate({
-				where: {
-					userId,
-					date: {
-						gte: new Date(currentYear, 0, 1)
-					}
-				},
-				_sum: {
-					amount: true
-				}
-			})
-		])
+			incomes: await Promise.all(
+				last6Months.map(async (date) => {
+					const start = new Date(date.getFullYear(), date.getMonth(), 1)
+					const end = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59)
+					const sum = await prisma.income.aggregate({
+						where: {
+							userId,
+							createdAt: {
+								gte: start,
+								lte: end
+							}
+						},
+						_sum: {
+							amount: true
+						}
+					})
+					return sum._sum.amount || 0
+				})
+			),
+			expenses: await Promise.all(
+				last6Months.map(async (date) => {
+					const start = new Date(date.getFullYear(), date.getMonth(), 1)
+					const end = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59)
+					const sum = await prisma.expense.aggregate({
+						where: {
+							userId,
+							createdAt: {
+								gte: start,
+								lte: end
+							}
+						},
+						_sum: {
+							amount: true
+						}
+					})
+					return sum._sum.amount || 0
+				})
+			)
+		}
 
 		res.json({
-			monthlyData: {
-				labels: last6Months.map((date) => date.toLocaleDateString('tr-TR', { month: 'long' })),
-				incomes: last6Months.map((date) => {
-					const income = monthlyIncomes.find((i) => new Date(i.date).getMonth() === date.getMonth())
-					return income?._sum.amount || 0
-				}),
-				expenses: last6Months.map((date) => {
-					const expense = monthlyExpenses.find((e) => new Date(e.date).getMonth() === date.getMonth())
-					return expense?._sum.amount || 0
-				})
-			},
+			monthlyData,
 			categoryData: {
-				labels: categories.map((c) => c.name),
-				data: categories.map((c) => {
-					const expense = expensesByCategory.find((e) => e.categoryId === c.id)
-					return expense?._sum.amount || 0
-				})
+				labels: Object.keys(categoryData),
+				data: Object.values(categoryData)
 			},
 			totalStats: {
-				income: totalStats[0]._sum.amount || 0,
-				expense: totalStats[1]._sum.amount || 0
-			}
+				income: totalIncome,
+				expense: totalExpense
+			},
+			spendingGoal: currentGoal
 		})
 	} catch (error) {
-		console.error('Dashboard stats error:', error)
-		res.status(500).json({ message: 'Sunucu hatası', error: error.message })
+		console.error('Dashboard istatistikleri alınırken hata:', error)
+		res.status(500).json({ message: 'Sunucu hatası' })
 	}
 }

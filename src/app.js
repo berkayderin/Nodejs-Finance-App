@@ -9,6 +9,7 @@ const expenseRoutes = require('./routes/expenseRoutes')
 const userRoutes = require('./routes/userRoutes')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
+const spendingGoalRoutes = require('./routes/spendingGoalRoutes')
 
 const app = express()
 
@@ -45,6 +46,9 @@ app.use('/api/dashboard', require('./routes/dashboardRoutes'))
 // Web routes
 app.use('/auth', require('./routes/web/authRoutes'))
 app.use('/panel', require('./routes/web/panelRoutes'))
+
+// Routes
+app.use('/spending-goal', spendingGoalRoutes)
 
 // 404 - Sayfa Bulunamadı
 app.use((req, res, next) => {
