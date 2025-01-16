@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
@@ -13,24 +13,24 @@ enum Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  email      String     @unique
+  password   String
+  name       String
+  role       Role       @default(USER)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
   categories Category[]
   incomes    Income[]
   expenses   Expense[]
 }
 
 model Category {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      Int
+  userId      String    @db.ObjectId
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   expenses    Expense[]
@@ -39,28 +39,27 @@ model Category {
 }
 
 model Income {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  amount      Decimal  @db.Decimal(10, 2)
+  amount      Float
   description String?
   date        DateTime
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      Int
+  userId      String   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Expense {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  amount      Decimal  @db.Decimal(10, 2)
+  amount      Float
   description String?
   date        DateTime
   category    Category @relation(fields: [categoryId], references: [id])
-  categoryId  Int
+  categoryId  String   @db.ObjectId
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      Int
+  userId      String   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
-
