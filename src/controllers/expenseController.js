@@ -14,7 +14,7 @@ exports.createExpense = async (req, res) => {
 		// Kategori kontrolü
 		const category = await prisma.category.findFirst({
 			where: {
-				id: Number(categoryId),
+				id: categoryId,
 				userId
 			}
 		})
@@ -36,7 +36,7 @@ exports.createExpense = async (req, res) => {
 				},
 				category: {
 					connect: {
-						id: Number(categoryId)
+						id: categoryId
 					}
 				}
 			},
@@ -70,7 +70,7 @@ exports.getExpenses = async (req, res) => {
 						lte: new Date(endDate)
 					}
 				}),
-			...(categoryId && { categoryId: Number(categoryId) })
+			...(categoryId && { categoryId })
 		}
 
 		const expenses = await prisma.expense.findMany({
@@ -98,7 +98,7 @@ exports.getExpense = async (req, res) => {
 
 		const expense = await prisma.expense.findFirst({
 			where: {
-				id: Number(id),
+				id,
 				userId
 			},
 			include: {
@@ -125,7 +125,7 @@ exports.updateExpense = async (req, res) => {
 
 		const expense = await prisma.expense.findFirst({
 			where: {
-				id: Number(id),
+				id,
 				userId
 			}
 		})
@@ -137,7 +137,7 @@ exports.updateExpense = async (req, res) => {
 		if (categoryId) {
 			const category = await prisma.category.findFirst({
 				where: {
-					id: Number(categoryId),
+					id: categoryId,
 					userId
 				}
 			})
@@ -148,12 +148,12 @@ exports.updateExpense = async (req, res) => {
 		}
 
 		const updatedExpense = await prisma.expense.update({
-			where: { id: Number(id) },
+			where: { id },
 			data: {
 				amount: amount ? Number(amount) : undefined,
 				description,
 				date: date ? new Date(date) : undefined,
-				categoryId: categoryId ? Number(categoryId) : undefined
+				categoryId: categoryId || undefined
 			},
 			include: {
 				category: true
@@ -177,7 +177,7 @@ exports.deleteExpense = async (req, res) => {
 
 		const expense = await prisma.expense.findFirst({
 			where: {
-				id: Number(id),
+				id,
 				userId
 			}
 		})
@@ -187,7 +187,7 @@ exports.deleteExpense = async (req, res) => {
 		}
 
 		await prisma.expense.delete({
-			where: { id: Number(id) }
+			where: { id }
 		})
 
 		res.json({ message: 'Gider başarıyla silindi' })

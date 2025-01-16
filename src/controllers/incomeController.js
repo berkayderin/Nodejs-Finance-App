@@ -73,7 +73,7 @@ exports.getIncome = async (req, res) => {
 
 		const income = await prisma.income.findFirst({
 			where: {
-				id: Number(id),
+				id,
 				userId
 			},
 			include: {
@@ -100,7 +100,7 @@ exports.updateIncome = async (req, res) => {
 
 		const income = await prisma.income.findFirst({
 			where: {
-				id: Number(id),
+				id,
 				userId
 			}
 		})
@@ -110,7 +110,7 @@ exports.updateIncome = async (req, res) => {
 		}
 
 		const updatedIncome = await prisma.income.update({
-			where: { id: Number(id) },
+			where: { id },
 			data: {
 				name,
 				amount: amount ? parseFloat(amount) : undefined,
@@ -136,7 +136,7 @@ exports.deleteIncome = async (req, res) => {
 
 		const income = await prisma.income.findFirst({
 			where: {
-				id: Number(id),
+				id,
 				userId
 			}
 		})
@@ -146,7 +146,7 @@ exports.deleteIncome = async (req, res) => {
 		}
 
 		await prisma.income.delete({
-			where: { id: Number(id) }
+			where: { id }
 		})
 
 		res.json({ message: 'Gelir başarıyla silindi' })
