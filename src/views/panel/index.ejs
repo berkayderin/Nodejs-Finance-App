@@ -1,3 +1,6 @@
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div
@@ -262,7 +265,25 @@
 					</div>
 					<div class="ml-5 w-0 flex-1">
 						<dl>
-							<dt class="text-sm font-medium text-gray-500 truncate">Aylık Harcama Hedefi</dt>
+							<dt class="text-sm font-medium text-gray-500 truncate flex items-center">
+								Aylık Harcama Hedefi
+								<div
+									x-init="tippy($el, { 
+										content: 'Aylık harcamalarınızı kontrol altında tutmak için kendinize bir hedef belirleyebilirsiniz.',
+										theme: 'gray'
+									})"
+									class="ml-1 cursor-help"
+								>
+									<svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+										/>
+									</svg>
+								</div>
+							</dt>
 							<template x-if="!stats.spendingGoal">
 								<dd class="mt-1">
 									<button
@@ -311,8 +332,24 @@
 										</div>
 									</div>
 									<template x-if="stats.totalStats.expense >= stats.spendingGoal.amount">
-										<div class="mt-2 text-sm text-red-600">
-											Aylık harcama hedefinize ulaştınız! Lütfen daha dikkatli harcama yapın.
+										<div class="mt-2">
+											<div
+												x-init="tippy($el, { 
+													content: 'Aylık harcama hedefinize ulaştınız! Lütfen daha dikkatli harcama yapın.',
+													theme: 'red'
+												})"
+												class="inline-flex items-center text-red-600"
+											>
+												<svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+													<path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="2"
+														d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+													/>
+												</svg>
+												<span>Harcama limitini aştınız!</span>
+											</div>
 										</div>
 									</template>
 								</dd>
@@ -466,6 +503,33 @@
 <!-- Sayfaya özel scriptleri tanımlayalım -->
 <%- contentFor('scripts') %>
 <script>
+	// Tippy.js temasını özelleştirelim
+	tippy.setDefaultProps({
+		duration: 200,
+		animation: 'shift-away'
+	})
+
+	// Kırmızı ve gri tema için özel stil
+	const style = document.createElement('style')
+	style.textContent = `
+		.tippy-box[data-theme~='red'] {
+			background-color: #EF4444;
+			color: white;
+		}
+		.tippy-box[data-theme~='red'][data-placement^='top'] > .tippy-arrow::before {
+			border-top-color: #EF4444;
+		}
+		.tippy-box[data-theme~='gray'] {
+			background-color: #374151;
+			color: white;
+			font-size: 0.875rem;
+		}
+		.tippy-box[data-theme~='gray'][data-placement^='top'] > .tippy-arrow::before {
+			border-top-color: #374151;
+		}
+	`
+	document.head.appendChild(style)
+
 	Chart.defaults.font.family = 'Inter var, system-ui, sans-serif'
 	Chart.defaults.color = '#6b7280'
 	Chart.defaults.borderColor = '#e5e7eb'
