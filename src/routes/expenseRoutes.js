@@ -6,7 +6,7 @@ const {
 	updateExpense,
 	deleteExpense
 } = require('../controllers/expenseController')
-const authMiddleware = require('../middleware/auth')
+const { isAuthenticated } = require('../middleware/auth')
 
 const router = express.Router()
 
@@ -52,7 +52,7 @@ const router = express.Router()
  *       404:
  *         description: Kategori bulunamadı
  */
-router.post('/', authMiddleware, createExpense)
+router.post('/', isAuthenticated, createExpense)
 
 /**
  * @swagger
@@ -86,7 +86,7 @@ router.post('/', authMiddleware, createExpense)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.get('/', authMiddleware, getExpenses)
+router.get('/', isAuthenticated, getExpenses)
 
 /**
  * @swagger
@@ -111,7 +111,7 @@ router.get('/', authMiddleware, getExpenses)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.get('/:id', authMiddleware, getExpense)
+router.get('/:id', isAuthenticated, getExpense)
 
 /**
  * @swagger
@@ -156,7 +156,7 @@ router.get('/:id', authMiddleware, getExpense)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.put('/:id', authMiddleware, updateExpense)
+router.put('/:id', isAuthenticated, updateExpense)
 
 /**
  * @swagger
@@ -181,6 +181,6 @@ router.put('/:id', authMiddleware, updateExpense)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.delete('/:id', authMiddleware, deleteExpense)
+router.delete('/:id', isAuthenticated, deleteExpense)
 
 module.exports = router

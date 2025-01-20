@@ -10,6 +10,7 @@ const userRoutes = require('./routes/userRoutes')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const spendingGoalRoutes = require('./routes/spendingGoalRoutes')
+const exportRoutes = require('./routes/exportRoutes')
 
 const app = express()
 
@@ -42,6 +43,7 @@ app.use('/api/incomes', incomeRoutes)
 app.use('/api/expenses', expenseRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/dashboard', require('./routes/dashboardRoutes'))
+app.use('/api/export', exportRoutes)
 
 // Web routes
 app.use('/auth', require('./routes/web/authRoutes'))

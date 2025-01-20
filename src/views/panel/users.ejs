@@ -87,10 +87,77 @@
 >
 	<div class="sm:flex sm:items-center">
 		<div class="sm:flex-auto">
-			<h1 class="text-xl font-semibold text-gray-900">Kullanıcılar</h1>
-			<p class="mt-2 text-sm text-gray-700">Sistemdeki tüm kullanıcıların listesi.</p>
+			<h1 class="text-base font-semibold leading-6 text-gray-900">Kullanıcılar</h1>
+			<p class="mt-2 text-sm text-gray-700">Tüm kullanıcıları görüntüleyin ve yönetin.</p>
 		</div>
-		<div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+		<div class="mt-4 sm:mt-0 sm:flex-none flex items-center gap-4">
+			<!-- Dışa Aktarma Dropdown -->
+			<div class="relative" x-data="{ open: false }">
+				<button
+					@click="open = !open"
+					type="button"
+					class="inline-flex items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+				>
+					<svg class="-ml-0.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+						<path
+							d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z"
+						/>
+						<path
+							d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z"
+						/>
+					</svg>
+					Dışa Aktar
+					<svg class="-mr-1 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+						<path
+							fill-rule="evenodd"
+							d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+							clip-rule="evenodd"
+						/>
+					</svg>
+				</button>
+				<div
+					x-show="open"
+					@click.away="open = false"
+					class="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+					role="menu"
+					aria-orientation="vertical"
+					aria-labelledby="menu-button"
+					tabindex="-1"
+				>
+					<div class="py-1" role="none">
+						<a
+							href="/api/export/users?format=excel"
+							class="text-gray-700 group flex items-center px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
+							role="menuitem"
+							tabindex="-1"
+						>
+							<svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+								<path
+									fill-rule="evenodd"
+									d="M4.5 2A1.5 1.5 0 003 3.5v13A1.5 1.5 0 004.5 18h11a1.5 1.5 0 001.5-1.5V7.621a1.5 1.5 0 00-.44-1.06l-4.12-4.122A1.5 1.5 0 0011.378 2H4.5zm2.25 8.5a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5zm0 3a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							Excel
+						</a>
+						<a
+							href="/api/export/users?format=pdf"
+							class="text-gray-700 group flex items-center px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
+							role="menuitem"
+							tabindex="-1"
+						>
+							<svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+								<path
+									fill-rule="evenodd"
+									d="M4.5 2A1.5 1.5 0 003 3.5v13A1.5 1.5 0 004.5 18h11a1.5 1.5 0 001.5-1.5V7.621a1.5 1.5 0 00-.44-1.06l-4.12-4.122A1.5 1.5 0 0011.378 2H4.5zm2.25 8.5a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5zm0 3a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							PDF
+						</a>
+					</div>
+				</div>
+			</div>
 			<button
 				@click="resetForm()"
 				class="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto"

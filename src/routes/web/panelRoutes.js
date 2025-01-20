@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const authMiddleware = require('../../middleware/auth')
-const adminAuth = require('../../middleware/adminAuth')
+const { isAuthenticated, isAdmin } = require('../../middleware/auth')
 
-router.use(authMiddleware)
+// Her istekte authentication kontrolü yap
+router.use(isAuthenticated)
 
 // Her istekte path ve user bilgisini view'a gönder
 router.use((req, res, next) => {
@@ -32,7 +32,7 @@ router.get('/settings', (req, res) => {
 	res.render('panel/settings', { layout: 'layouts/panel' })
 })
 
-router.get('/users', adminAuth, (req, res) => {
+router.get('/users', isAdmin, (req, res) => {
 	res.render('panel/users', { layout: 'layouts/panel' })
 })
 

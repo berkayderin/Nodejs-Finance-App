@@ -1,6 +1,6 @@
 const express = require('express')
 const { register, login, changePassword } = require('../controllers/authController')
-const authMiddleware = require('../middleware/auth')
+const { isAuthenticated } = require('../middleware/auth')
 
 const router = express.Router()
 
@@ -145,6 +145,6 @@ router.post('/login', login)
  *       500:
  *         description: Sunucu hatası
  */
-router.put('/change-password', authMiddleware, changePassword)
+router.put('/change-password', isAuthenticated, changePassword)
 
 module.exports = router

@@ -1,7 +1,6 @@
 const express = require('express')
 const { getUsers, getUser, updateUser, deleteUser, getUserStats } = require('../controllers/userController')
-const authMiddleware = require('../middleware/auth')
-const adminAuth = require('../middleware/adminAuth')
+const { isAuthenticated, isAdmin } = require('../middleware/auth')
 
 const router = express.Router()
 
@@ -21,7 +20,7 @@ const router = express.Router()
  *       403:
  *         description: Yetki hatası
  */
-router.get('/', authMiddleware, adminAuth, getUsers)
+router.get('/', isAuthenticated, isAdmin, getUsers)
 
 /**
  * @swagger
@@ -48,7 +47,7 @@ router.get('/', authMiddleware, adminAuth, getUsers)
  *       403:
  *         description: Yetki hatası
  */
-router.get('/:id', authMiddleware, adminAuth, getUser)
+router.get('/:id', isAuthenticated, isAdmin, getUser)
 
 /**
  * @swagger
@@ -96,7 +95,7 @@ router.get('/:id', authMiddleware, adminAuth, getUser)
  *       403:
  *         description: Yetki hatası
  */
-router.put('/:id', authMiddleware, adminAuth, updateUser)
+router.put('/:id', isAuthenticated, isAdmin, updateUser)
 
 /**
  * @swagger
@@ -123,7 +122,7 @@ router.put('/:id', authMiddleware, adminAuth, updateUser)
  *       403:
  *         description: Yetki hatası
  */
-router.delete('/:id', authMiddleware, adminAuth, deleteUser)
+router.delete('/:id', isAuthenticated, isAdmin, deleteUser)
 
 /**
  * @swagger
@@ -162,6 +161,6 @@ router.delete('/:id', authMiddleware, adminAuth, deleteUser)
  *       403:
  *         description: Yetki hatası
  */
-router.get('/:id/stats', authMiddleware, adminAuth, getUserStats)
+router.get('/:id/stats', isAuthenticated, isAdmin, getUserStats)
 
 module.exports = router

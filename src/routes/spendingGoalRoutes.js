@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const spendingGoalController = require('../controllers/spendingGoalController')
-const auth = require('../middleware/auth')
+const { isAuthenticated } = require('../middleware/auth')
 
-router.post('/create', auth, spendingGoalController.createSpendingGoal)
+router.post('/create', isAuthenticated, spendingGoalController.createSpendingGoal)
 
 module.exports = router

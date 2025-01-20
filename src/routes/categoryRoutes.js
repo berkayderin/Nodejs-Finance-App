@@ -6,7 +6,7 @@ const {
 	updateCategory,
 	deleteCategory
 } = require('../controllers/categoryController')
-const authMiddleware = require('../middleware/auth')
+const { isAuthenticated } = require('../middleware/auth')
 
 const router = express.Router()
 
@@ -41,7 +41,7 @@ const router = express.Router()
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.post('/', authMiddleware, createCategory)
+router.post('/', isAuthenticated, createCategory)
 
 /**
  * @swagger
@@ -57,7 +57,7 @@ router.post('/', authMiddleware, createCategory)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.get('/', authMiddleware, getCategories)
+router.get('/', isAuthenticated, getCategories)
 
 /**
  * @swagger
@@ -82,7 +82,7 @@ router.get('/', authMiddleware, getCategories)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.get('/:id', authMiddleware, getCategory)
+router.get('/:id', isAuthenticated, getCategory)
 
 /**
  * @swagger
@@ -120,7 +120,7 @@ router.get('/:id', authMiddleware, getCategory)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.put('/:id', authMiddleware, updateCategory)
+router.put('/:id', isAuthenticated, updateCategory)
 
 /**
  * @swagger
@@ -145,6 +145,6 @@ router.put('/:id', authMiddleware, updateCategory)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.delete('/:id', authMiddleware, deleteCategory)
+router.delete('/:id', isAuthenticated, deleteCategory)
 
 module.exports = router

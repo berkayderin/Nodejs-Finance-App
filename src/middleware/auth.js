@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
-const authMiddleware = async (req, res, next) => {
+const isAuthenticated = async (req, res, next) => {
 	try {
 		// API istekleri için token kontrolü
 		if (req.path.startsWith('/api/')) {
@@ -62,4 +62,19 @@ const authMiddleware = async (req, res, next) => {
 	}
 }
 
-module.exports = authMiddleware
+const isAdmin = (req, res, next) => {
+	if (req.user && req.user.role === 'ADMIN') {
+		return next()
+	}
+
+	if (req.path.startsWith('/api/')) {
+		return res.status(403).json({ message: 'Bu işlem için yetkiniz yok' })
+	} else {
+		return res.redirect('/panel')
+	}
+}
+
+module.exports = {
+	isAuthenticated,
+	isAdmin
+}

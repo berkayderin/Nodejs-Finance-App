@@ -1,6 +1,6 @@
 const express = require('express')
 const { createIncome, getIncomes, getIncome, updateIncome, deleteIncome } = require('../controllers/incomeController')
-const authMiddleware = require('../middleware/auth')
+const { isAuthenticated } = require('../middleware/auth')
 
 const router = express.Router()
 
@@ -46,7 +46,7 @@ const router = express.Router()
  *       404:
  *         description: Kategori bulunamadı
  */
-router.post('/', authMiddleware, createIncome)
+router.post('/', isAuthenticated, createIncome)
 
 /**
  * @swagger
@@ -80,7 +80,7 @@ router.post('/', authMiddleware, createIncome)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.get('/', authMiddleware, getIncomes)
+router.get('/', isAuthenticated, getIncomes)
 
 /**
  * @swagger
@@ -105,7 +105,7 @@ router.get('/', authMiddleware, getIncomes)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.get('/:id', authMiddleware, getIncome)
+router.get('/:id', isAuthenticated, getIncome)
 
 /**
  * @swagger
@@ -150,7 +150,7 @@ router.get('/:id', authMiddleware, getIncome)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.put('/:id', authMiddleware, updateIncome)
+router.put('/:id', isAuthenticated, updateIncome)
 
 /**
  * @swagger
@@ -175,6 +175,6 @@ router.put('/:id', authMiddleware, updateIncome)
  *       401:
  *         description: Yetkilendirme hatası
  */
-router.delete('/:id', authMiddleware, deleteIncome)
+router.delete('/:id', isAuthenticated, deleteIncome)
 
 module.exports = router
