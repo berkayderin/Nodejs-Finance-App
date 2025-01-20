@@ -72,7 +72,9 @@ app.use((err, req, res, next) => {
 	console.error(err.stack)
 
 	if (req.path.startsWith('/api/')) {
-		res.status(500).json({ message: 'Sunucu hatası', error: err.message })
+		res
+			.status(500)
+			.json({ message: 'Sunucu hatası', error: err.message })
 	} else {
 		res.status(500).render('error', {
 			layout: 'layouts/main',
@@ -86,5 +88,7 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
-	console.log(`Server ${PORT} portunda çalışıyor`)
+	console.log(
+		`Server ${PORT} portunda çalışıyor url: http://localhost:${PORT}`
+	)
 })
