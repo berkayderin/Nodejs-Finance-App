@@ -65,7 +65,9 @@ const exportToPDF = async (data, headers, filename) => {
 	const columnWidth = pageWidth / columnCount
 
 	// Tablo başlıkları için arka plan
-	doc.rect(50, doc.y, pageWidth, 30).fillAndStroke('#34495e', '#2c3e50')
+	doc
+		.rect(50, doc.y, pageWidth, 30)
+		.fillAndStroke('#34495e', '#2c3e50')
 
 	// Tablo başlıkları
 	let startX = 50
@@ -104,7 +106,9 @@ const exportToPDF = async (data, headers, filename) => {
 			rowY = 50
 
 			// Yeni sayfada tablo başlıklarını tekrar ekle
-			doc.rect(50, rowY, pageWidth, 30).fillAndStroke('#34495e', '#2c3e50')
+			doc
+				.rect(50, rowY, pageWidth, 30)
+				.fillAndStroke('#34495e', '#2c3e50')
 
 			startX = 50
 			doc.fillColor('#ffffff').fontSize(11)
@@ -130,7 +134,9 @@ const exportToPDF = async (data, headers, filename) => {
 		}
 
 		// Satır arka planı
-		doc.rect(50, rowY, pageWidth, rowHeight).fillAndStroke(isEvenRow ? '#f5f6fa' : '#ffffff', '#bdc3c7')
+		doc
+			.rect(50, rowY, pageWidth, rowHeight)
+			.fillAndStroke(isEvenRow ? '#f5f6fa' : '#ffffff', '#bdc3c7')
 
 		// Satır verileri
 		startX = 50
@@ -167,9 +173,14 @@ const exportToPDF = async (data, headers, filename) => {
 		doc
 			.fillColor('#7f8c8d')
 			.fontSize(8)
-			.text(`Sayfa ${i + 1} / ${pages.count}`, 50, doc.page.height - 50, {
-				align: 'center'
-			})
+			.text(
+				`Sayfa ${i + 1} / ${pages.count}`,
+				50,
+				doc.page.height - 50,
+				{
+					align: 'center'
+				}
+			)
 	}
 
 	doc.end()
@@ -185,7 +196,7 @@ const exportToPDF = async (data, headers, filename) => {
 exports.exportIncomes = async (req, res) => {
 	try {
 		const incomes = await prisma.income.findMany({
-			where: { userId: req.user.id },
+			where: { userId: req.user.userId },
 			orderBy: { date: 'desc' }
 		})
 
@@ -205,20 +216,35 @@ exports.exportIncomes = async (req, res) => {
 
 		if (req.query.format === 'excel') {
 			const buffer = await exportToExcel(data, headers, 'Gelirler')
-			res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-			res.setHeader('Content-Disposition', 'attachment; filename=gelirler.xlsx')
+			res.setHeader(
+				'Content-Type',
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			)
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename=gelirler.xlsx'
+			)
 			return res.send(buffer)
 		} else if (req.query.format === 'pdf') {
-			const buffer = await exportToPDF(data, headers, 'Gelirler Listesi')
+			const buffer = await exportToPDF(
+				data,
+				headers,
+				'Gelirler Listesi'
+			)
 			res.setHeader('Content-Type', 'application/pdf')
-			res.setHeader('Content-Disposition', 'attachment; filename=gelirler.pdf')
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename=gelirler.pdf'
+			)
 			return res.send(buffer)
 		}
 
 		res.status(400).json({ error: 'Geçersiz format' })
 	} catch (error) {
 		console.error('Export error:', error)
-		res.status(500).json({ error: 'Export işlemi sırasında bir hata oluştu' })
+		res
+			.status(500)
+			.json({ error: 'Export işlemi sırasında bir hata oluştu' })
 	}
 }
 
@@ -226,7 +252,7 @@ exports.exportIncomes = async (req, res) => {
 exports.exportExpenses = async (req, res) => {
 	try {
 		const expenses = await prisma.expense.findMany({
-			where: { userId: req.user.id },
+			where: { userId: req.user.userId },
 			include: { category: true },
 			orderBy: { date: 'desc' }
 		})
@@ -249,20 +275,35 @@ exports.exportExpenses = async (req, res) => {
 
 		if (req.query.format === 'excel') {
 			const buffer = await exportToExcel(data, headers, 'Giderler')
-			res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-			res.setHeader('Content-Disposition', 'attachment; filename=giderler.xlsx')
+			res.setHeader(
+				'Content-Type',
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			)
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename=giderler.xlsx'
+			)
 			return res.send(buffer)
 		} else if (req.query.format === 'pdf') {
-			const buffer = await exportToPDF(data, headers, 'Giderler Listesi')
+			const buffer = await exportToPDF(
+				data,
+				headers,
+				'Giderler Listesi'
+			)
 			res.setHeader('Content-Type', 'application/pdf')
-			res.setHeader('Content-Disposition', 'attachment; filename=giderler.pdf')
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename=giderler.pdf'
+			)
 			return res.send(buffer)
 		}
 
 		res.status(400).json({ error: 'Geçersiz format' })
 	} catch (error) {
 		console.error('Export error:', error)
-		res.status(500).json({ error: 'Export işlemi sırasında bir hata oluştu' })
+		res
+			.status(500)
+			.json({ error: 'Export işlemi sırasında bir hata oluştu' })
 	}
 }
 
@@ -270,14 +311,16 @@ exports.exportExpenses = async (req, res) => {
 exports.exportCategories = async (req, res) => {
 	try {
 		const categories = await prisma.category.findMany({
-			where: { userId: req.user.id },
+			where: { userId: req.user.userId },
 			orderBy: { createdAt: 'desc' }
 		})
 
 		const data = categories.map((category) => ({
 			name: category.name,
 			description: category.description || '-',
-			createdAt: new Date(category.createdAt).toLocaleDateString('tr-TR')
+			createdAt: new Date(category.createdAt).toLocaleDateString(
+				'tr-TR'
+			)
 		}))
 
 		const headers = [
@@ -288,20 +331,35 @@ exports.exportCategories = async (req, res) => {
 
 		if (req.query.format === 'excel') {
 			const buffer = await exportToExcel(data, headers, 'Kategoriler')
-			res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-			res.setHeader('Content-Disposition', 'attachment; filename=kategoriler.xlsx')
+			res.setHeader(
+				'Content-Type',
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			)
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename=kategoriler.xlsx'
+			)
 			return res.send(buffer)
 		} else if (req.query.format === 'pdf') {
-			const buffer = await exportToPDF(data, headers, 'Kategoriler Listesi')
+			const buffer = await exportToPDF(
+				data,
+				headers,
+				'Kategoriler Listesi'
+			)
 			res.setHeader('Content-Type', 'application/pdf')
-			res.setHeader('Content-Disposition', 'attachment; filename=kategoriler.pdf')
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename=kategoriler.pdf'
+			)
 			return res.send(buffer)
 		}
 
 		res.status(400).json({ error: 'Geçersiz format' })
 	} catch (error) {
 		console.error('Export error:', error)
-		res.status(500).json({ error: 'Export işlemi sırasında bir hata oluştu' })
+		res
+			.status(500)
+			.json({ error: 'Export işlemi sırasında bir hata oluştu' })
 	}
 }
 
@@ -309,7 +367,9 @@ exports.exportCategories = async (req, res) => {
 exports.exportUsers = async (req, res) => {
 	try {
 		if (req.user.role !== 'ADMIN') {
-			return res.status(403).json({ error: 'Bu işlem için yetkiniz yok' })
+			return res
+				.status(403)
+				.json({ error: 'Bu işlem için yetkiniz yok' })
 		}
 
 		const users = await prisma.user.findMany({
@@ -331,20 +391,39 @@ exports.exportUsers = async (req, res) => {
 		]
 
 		if (req.query.format === 'excel') {
-			const buffer = await exportToExcel(data, headers, 'Kullanıcılar')
-			res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-			res.setHeader('Content-Disposition', 'attachment; filename=kullanicilar.xlsx')
+			const buffer = await exportToExcel(
+				data,
+				headers,
+				'Kullanıcılar'
+			)
+			res.setHeader(
+				'Content-Type',
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			)
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename=kullanicilar.xlsx'
+			)
 			return res.send(buffer)
 		} else if (req.query.format === 'pdf') {
-			const buffer = await exportToPDF(data, headers, 'Kullanıcılar Listesi')
+			const buffer = await exportToPDF(
+				data,
+				headers,
+				'Kullanıcılar Listesi'
+			)
 			res.setHeader('Content-Type', 'application/pdf')
-			res.setHeader('Content-Disposition', 'attachment; filename=kullanicilar.pdf')
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename=kullanicilar.pdf'
+			)
 			return res.send(buffer)
 		}
 
 		res.status(400).json({ error: 'Geçersiz format' })
 	} catch (error) {
 		console.error('Export error:', error)
-		res.status(500).json({ error: 'Export işlemi sırasında bir hata oluştu' })
+		res
+			.status(500)
+			.json({ error: 'Export işlemi sırasında bir hata oluştu' })
 	}
 }
